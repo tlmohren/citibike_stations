@@ -3,6 +3,7 @@ import requests
 import time
 import sys
 import datetime
+import numpy as np
 
 # save constants
 SOURCE_URL = "http://gbfs.citibikenyc.com/gbfs/gbfs.json"
@@ -35,6 +36,7 @@ def initialize_data_dict(station_status_url):
 
 # start loop -----------------------------------
 starttime = datetime.datetime.now()
+times_passed_previous = 0
 
 data_dict = initialize_data_dict(station_status_url)
 
@@ -58,7 +60,13 @@ while True:
     print(f"Run duration: {run_duration.seconds}")
 
     # Save data and reset data dict periodically
-    if (run_duration.seconds % SAVE_SPAN_SECONDS) == 0:
+    times_passed = np.floor(run_duration.seconds / SAVE_SPAN_SECONDS)
+    if times_passed != times_passed_previous:
+        times_passed_previous = times_passed
+        print("---------")
+        print(f"times passed: {times_passed}")
+
+        # if (run_duration.seconds % SAVE_SPAN_SECONDS) == 0:
         now_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         filename = "data/citibike_stations_" + now_time + ".json"
         print(f"Running for {run_duration.seconds}, Saving file: {filename}")
