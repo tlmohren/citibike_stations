@@ -7,9 +7,9 @@ import numpy as np
 # save constants
 SOURCE_URL = "http://gbfs.citibikenyc.com/gbfs/gbfs.json"
 SLEEP_DURATION = 10
-END_RECORDING = datetime.datetime(2020, 8, 15, 17, 15, 0)
-SAVE_CONDITION = {"microsecond": 0, "second": 0}  # save every minute
-# SAVE_CONDITION = {"microsecond": 0, "second": 0, "minute":0}  # save every hour
+END_RECORDING = datetime.datetime(2020, 8, 25, 12, 0, 0)
+# SAVE_CONDITION = {"microsecond": 0, "second": 0}  # save every minute
+SAVE_CONDITION = {"microsecond": 0, "second": 0, "minute":0}  # save every hour
 # SAVE_CONDITION = {"microsecond": 0, "second": 0, "hour":0}  # save every day
 
 # pre-process data source
@@ -66,7 +66,7 @@ while True:
     if new_looptime > last_looptime:
         last_looptime = new_looptime
         now_time = loop_time.strftime("%Y%m%d_%H%M%S")
-        filename = "testdata/citibike_stations_" + now_time + ".json"
+        filename = "data/citibike_stations_" + now_time + ".json"
         print(f"Saving file: {filename}")
 
         with open(filename, "w") as outfile:
