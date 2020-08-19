@@ -46,32 +46,35 @@ last_looptime = datetime.datetime.now().replace(microsecond=0, second=0)
 while True:
     loop_time = datetime.datetime.now()
     print(f"loop startime: {loop_time}")
+    try:
 
-    station_status = requests.get(station_status_url).json()
-    for station in station_status["data"]["stations"]:
-        station_id = station["station_id"]
-        station_time = station["last_reported"]
-        if station_time not in data_dict[station_id]:
-            subsubdict = {
-                "num_bikes_available": station["num_bikes_available"],
-                "num_ebikes_available": station["num_ebikes_available"],
-            }
-            subdict = {station_time: subsubdict}
-            olddict = data_dict[station_id]
-            data_dict[station_id] = {**olddict, **subdict}
-
-    # save if you passed a minute mark
-    new_looptime = loop_time.replace(**SAVE_CONDITION)
-
-    if new_looptime > last_looptime:
-        last_looptime = new_looptime
-        now_time = loop_time.strftime("%Y%m%d_%H%M%S")
-        filename = "data/citibike_stations_" + now_time + ".json"
-        print(f"Saving file: {filename}")
-
-        with open(filename, "w") as outfile:
-            json.dump(data_dict, outfile)
-        data_dict = initialize_data_dict(station_status_url)
+        station_status = requests.get(station_status_url).json()
+        for station in station_status["data"]["stations"]:
+            station_id = station["station_id"]
+            station_time = station["last_reported"]
+            if station_time not in data_dict[station_id]:
+                subsubdict = {
+                    "num_bikes_available": station["num_bikes_available"],
+                    "num_ebikes_available": station["num_ebikes_available"],
+                }
+                subdict = {station_time: subsubdict}
+                olddict = data_dict[station_id]
+                data_dict[station_id] = {**olddict, **subdict}
+    
+        # save if you passed a minute mark
+        new_looptime = loop_time.replace(**SAVE_CONDITION)
+    
+        if new_looptime > last_looptime:
+            last_looptime = new_looptime
+            now_time = loop_time.strftime("%Y%m%d_%H%M%S")
+            filename = "data/citibike_stations_" + now_time + ".json"
+            print(f"Saving file: {filename}")
+    
+            with open(filename, "w") as outfile:
+                json.dump(data_dict, outfile)
+            data_dict = initialize_data_dict(station_status_url)
+    except:
+        print("some error occured")
 
     # break loop after end of duration
     if loop_time > END_RECORDING:
