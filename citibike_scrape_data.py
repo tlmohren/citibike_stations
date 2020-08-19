@@ -12,7 +12,7 @@ SAVE_CONDITION = {"microsecond": 0, "second": 0}  # save every minute
 # SAVE_CONDITION = {"microsecond": 0, "second": 0, "minute":0}  # save every hour
 # SAVE_CONDITION = {"microsecond": 0, "second": 0, "hour":0}  # save every day
 
-# pre-process data source
+
 data_urls = requests.get(SOURCE_URL).json()
 station_status_url = data_urls["data"]["en"]["feeds"][2]["url"]
 
@@ -21,6 +21,7 @@ def floor_datetime(timeobj, round_sec=5):
     floor_sec = int(np.floor(timeobj.second / round_sec) * round_sec)
     tfloor = timeobj.replace(second=floor_sec, microsecond=0)
     return tfloor
+
 
 data_dict = {}
 last_looptime = datetime.datetime.now().replace(microsecond=0, second=0)
@@ -31,8 +32,8 @@ while True:
 
     station_status = requests.get(station_status_url).json()
     for station in station_status["data"]["stations"]:
-        station_id = station["station_id"]
-        station_time = station["last_reported"]
+        station_id = station.get("station_id", "-1")
+        station_time = station.get("last_reported", 100)
 
         try:
             data_dict[station_id]
